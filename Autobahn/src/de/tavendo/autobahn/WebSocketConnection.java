@@ -412,18 +412,25 @@ public class WebSocketConnection implements WebSocket {
                WebSocketMessage.Ping ping = (WebSocketMessage.Ping) msg.obj;
                if (DEBUG) Log.d(TAG, "WebSockets Ping received");
 
-               // reply with Pong
-               WebSocketMessage.Pong pong = new WebSocketMessage.Pong();
-               pong.mPayload = ping.mPayload;
-               mWriter.forward(pong);
-
+               // // reply with Pong
+               // WebSocketMessage.Pong pong = new WebSocketMessage.Pong();
+               // pong.mPayload = ping.mPayload;
+               // mWriter.forward(pong);
+               if (mWsHandler != null) {
+                  mWsHandler.onPingMessage(ping.mPayload);
+               } else {
+                  if (DEBUG) Log.d(TAG, "could not call onPingMessage() .. handler already NULL");
+               }
             } else if (msg.obj instanceof WebSocketMessage.Pong) {
 
-               @SuppressWarnings("unused")
+               // @SuppressWarnings("unused")
                WebSocketMessage.Pong pong = (WebSocketMessage.Pong) msg.obj;
-
                if (DEBUG) Log.d(TAG, "WebSockets Pong received");
-
+               if (mWsHandler != null) {
+                  mWsHandler.onPongMessage(pong.mPayload);
+               } else {
+                  if (DEBUG) Log.d(TAG, "could not call onPongMessage() .. handler already NULL");
+               }
             } else if (msg.obj instanceof WebSocketMessage.Close) {
 
                WebSocketMessage.Close close = (WebSocketMessage.Close) msg.obj;
